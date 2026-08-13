@@ -1,35 +1,50 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { MemberService } from './member.service';
-import { UsePipes, ValidationPipe } from '@nestjs/common';
+import { InternalServerErrorException, UsePipes, ValidationPipe } from '@nestjs/common';
 import { LoginInput, MemberInput } from '../../libs/dto/member/member.input';
+import { Member } from '../../libs/dto/member/member';
 
 @Resolver()
 export class MemberResolver {
-	constructor(private readonly memberService: MemberService) {}
+    constructor(private readonly memberService: MemberService) { }
 
-	@Mutation(() => String)
-	@UsePipes(ValidationPipe)   // shu method miqyosida
-	public async signup(@Args("input") input:MemberInput): Promise<string> {
-		console.log('Mutation: signup');
-		console.log('input:', input);
-		return this.memberService.signup();
-	}
+    @Mutation(() => Member)
+    @UsePipes(ValidationPipe)
+    public async signup(@Args("input") input: MemberInput): Promise<Member> {
+        try {
+            console.log("signup")
+            console.log("INPUT:::", input)
+            return this.memberService.signup(input)
 
-	@Mutation(() => String)
-	public async login(@Args("input") input: LoginInput): Promise<string> {
-		console.log('Mutation: login');
-		return this.memberService.login();
-	}
+        } catch (err) {
+            console.log("ERROR signup", err)
+            throw new InternalServerErrorException(err)
+        }
 
-	@Mutation(() => String)
-	public async updateMember(): Promise<string> {
-		console.log('Mutation: updateMember');
-		return this.memberService.updateMember();
-	}
+    }
 
-	@Query(() => String)
-	public async getMember(): Promise<string> {
-		console.log('Mutation: getMember');
-		return this.memberService.getMember();
-	}
+    @Mutation(() => Member)
+    public async login(@Args("input") input: LoginInput): Promise<Member> {
+        try {
+            console.log("login")
+            console.log("LOGININPUT:::", input)
+            return this.memberService.login(input)
+        } catch (err) {
+            console.log("ERROR signup", err)
+            throw new InternalServerErrorException(err)
+        }
+    }
+
+    @Mutation(() => String)
+    public async updateMember(): Promise<String> {
+        console.log("updateMember")
+        return this.memberService.updateMember()
+    }
+
+    @Query(() => String)
+    public async getMember(): Promise<String> {
+        console.log("getMember")
+        return this.memberService.getMember()
+    }
+
 }
