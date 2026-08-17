@@ -68,7 +68,7 @@ export class Member {
     memberRank!: number;
 
     @Field(() => Int)
-    memberWarning!: number;
+    memberWarnings!: number;
 
     @Field(() => Int)
     memberBlocks!: number;

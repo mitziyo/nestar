@@ -6,45 +6,42 @@ import { Member } from '../../libs/dto/member/member';
 
 @Resolver()
 export class MemberResolver {
-    constructor(private readonly memberService: MemberService) { }
+	constructor(private readonly memberService: MemberService) {}
 
-    @Mutation(() => Member)
-    @UsePipes(ValidationPipe)
-    public async signup(@Args("input") input: MemberInput): Promise<Member> {
-        try {
-            console.log("signup")
-            console.log("INPUT:::", input)
-            return this.memberService.signup(input)
+	@Mutation(() => Member)
+	@UsePipes(ValidationPipe)
+	public async signup(@Args('input') input: MemberInput): Promise<Member> {
+		try {
+			console.log('signup');
+			console.log('INPUT:::', input);
+			return this.memberService.signup(input);
+		} catch (err) {
+			console.log('ERROR signup', err);
+			throw new InternalServerErrorException(err);
+		}
+	}
 
-        } catch (err) {
-            console.log("ERROR signup", err)
-            throw new InternalServerErrorException(err)
-        }
+	@Mutation(() => Member)
+	public async login(@Args('input') input: LoginInput): Promise<Member> {
+		try {
+			console.log('login');
+			console.log('LOGININPUT:::', input);
+			return this.memberService.login(input);
+		} catch (err) {
+			console.log('ERROR login', err);
+			throw new InternalServerErrorException(err);
+		}
+	}
 
-    }
+	@Mutation(() => String)
+	public async updateMember(): Promise<String> {
+		console.log('updateMember');
+		return this.memberService.updateMember();
+	}
 
-    @Mutation(() => Member)
-    public async login(@Args("input") input: LoginInput): Promise<Member> {
-        try {
-            console.log("login")
-            console.log("LOGININPUT:::", input)
-            return this.memberService.login(input)
-        } catch (err) {
-            console.log("ERROR signup", err)
-            throw new InternalServerErrorException(err)
-        }
-    }
-
-    @Mutation(() => String)
-    public async updateMember(): Promise<String> {
-        console.log("updateMember")
-        return this.memberService.updateMember()
-    }
-
-    @Query(() => String)
-    public async getMember(): Promise<String> {
-        console.log("getMember")
-        return this.memberService.getMember()
-    }
-
+	@Query(() => String)
+	public async getMember(): Promise<String> {
+		console.log('getMember');
+		return this.memberService.getMember();
+	}
 }
