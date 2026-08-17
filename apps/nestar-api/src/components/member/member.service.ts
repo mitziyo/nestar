@@ -15,7 +15,7 @@ export class MemberService {
 			const result = await this.memberModel.create(input);
 			// todo: AUTHENTICATION TOKENS
 			return result;
-		} catch (err) {
+		} catch (err: any) {
 			console.log('ERROR on signup service model', err.message);
 			throw new BadRequestException(Message.USED_MEMBER_NICK_OR_PHPNE);
 		}
