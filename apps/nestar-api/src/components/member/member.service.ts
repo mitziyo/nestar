@@ -16,8 +16,8 @@ export class MemberService {
 			// todo: AUTHENTICATION TOKENS
 			return result;
 		} catch (err) {
-			console.log('ERROR on signup service model', err);
-			throw new BadRequestException(err);
+			console.log('ERROR on signup service model', err.message);
+			throw new BadRequestException(Message.USED_MEMBER_NICK_OR_PHPNE);
 		}
 	}
 
