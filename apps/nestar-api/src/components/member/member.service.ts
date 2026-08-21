@@ -18,7 +18,9 @@ export class MemberService {
 		try {
 			input.memberPassword = await this.authService.hashPassword(input.memberPassword);
 			const result = await this.memberModel.create(input);
-			// todo: AUTHENTICATION TOKENS
+
+			result.accessToken = await this.authService.createToken(result);
+
 			return result;
 		} catch (err: any) {
 			console.log('ERROR on signup service model', err.message);
@@ -38,11 +40,10 @@ export class MemberService {
 				throw new InternalServerErrorException(Message.BLOCKED_USER);
 			}
 
-			// todo: BSCRYPT COMPARING PASSWORD
-
 			const isMatch = await this.authService.comparePasswords(input.memberPassword, response.memberPassword);
 
 			if (!isMatch) throw new InternalServerErrorException(Message.WRONG_PASSWORD);
+			response.accessToken = await this.authService.createToken(response);
 
 			return response;
 		} catch (err) {
