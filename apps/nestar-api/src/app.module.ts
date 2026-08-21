@@ -19,12 +19,12 @@ import { T } from './libs/types/common';
 			uploads: false,
 			autoSchemaFile: true,
 			formatError: (error: T) => {
-			
 				const graphqlFormattedError = {
-					code: error?.extensions.code,
+					extensions: { code: error?.extensions?.code },
 					message:
-						error?.extensions?.exeption?.response?.message || error?.extensions?.response?.message || error?.message,
+						error?.extensions?.exception?.response?.message || error?.extensions?.response?.message || error?.message,
 				};
+
 				console.log('GRAPHQL GLOBAL ERR:', graphqlFormattedError);
 				return graphqlFormattedError;
 			},
