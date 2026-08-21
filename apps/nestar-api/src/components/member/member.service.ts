@@ -5,13 +5,18 @@ import { Member } from '../../libs/dto/member/member';
 import { LoginInput, MemberInput } from '../../libs/dto/member/member.input';
 import { MemberStatus } from '../../libs/enums/member.enum';
 import { Message } from '../../libs/enums/common.enum';
+import { AuthService } from '../auth/auth.service';
+import { responsePathAsArray } from 'graphql';
 @Injectable()
 export class MemberService {
-	constructor(@InjectModel('Member') private readonly memberModel: Model<Member>) {}
+	constructor(
+		@InjectModel('Member') private readonly memberModel: Model<Member>,
+		private authService: AuthService,
+	) {}
 
 	public async signup(input: MemberInput): Promise<Member> {
 		try {
-			// todo: HASHING
+			input.memberPassword = await this.authService.hashPassword(input.memberPassword);
 			const result = await this.memberModel.create(input);
 			// todo: AUTHENTICATION TOKENS
 			return result;
@@ -24,21 +29,22 @@ export class MemberService {
 	public async login(input: LoginInput): Promise<Member> {
 		try {
 			const { memberNick, memberPassword } = input;
-			const result = await this.memberModel.findOne({ memberNick: memberNick }).select('+memberPassword').exec();
+			console.log('input:', input);
+			const response = await this.memberModel.findOne({ memberNick: memberNick }).select('+memberPassword').exec();
 
-			if (!result || result.memberStatus === MemberStatus.DELETE) {
+			if (!response || response.memberStatus === MemberStatus.DELETE) {
 				throw new InternalServerErrorException(Message.NO_MEMBER_NICK);
-			} else if (result.memberStatus === MemberStatus.BLOCK) {
+			} else if (response.memberStatus === MemberStatus.BLOCK) {
 				throw new InternalServerErrorException(Message.BLOCKED_USER);
 			}
 
 			// todo: BSCRYPT COMPARING PASSWORD
 
-			const isMatch = memberPassword === result.memberPassword;
+			const isMatch = await this.authService.comparePasswords(input.memberPassword, response.memberPassword);
 
 			if (!isMatch) throw new InternalServerErrorException(Message.WRONG_PASSWORD);
 
-			return result;
+			return response;
 		} catch (err) {
 			console.log('ERROR on signup service model', err);
 			throw new BadRequestException(err);
