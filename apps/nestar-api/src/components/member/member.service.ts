@@ -7,6 +7,8 @@ import { MemberStatus } from '../../libs/enums/member.enum';
 import { Message } from '../../libs/enums/common.enum';
 import { AuthService } from '../auth/auth.service';
 import { responsePathAsArray } from 'graphql';
+import { ObjectId } from 'bson';
+import { MemberUpdate } from '../../libs/dto/member/member.update';
 @Injectable()
 export class MemberService {
 	constructor(
@@ -52,14 +54,17 @@ export class MemberService {
 		}
 	}
 
-	public async updateMember(): Promise<String> {
-		return 'updateMember executed!';
+	public async updateMember(memberId: ObjectId, input: MemberUpdate): Promise<Member> {
+		const result: Member | null = await this.memberModel
+			.findOneAndUpdate({ _id: memberId, memberStatus: MemberStatus.ACTIVE }, input, { new: true })
+			.exec();
+		if (!result) throw new InternalServerErrorException(Message.UPDATE_FAILED);
+		result.accessToken = await this.authService.createToken(result);
+		return result;
 	}
 
 	public async getMember(): Promise<String> {
 		return 'GTEMEMBER PAGE';
-
-
 	}
 
 	public async getAllMembersByAdmin(): Promise<String> {

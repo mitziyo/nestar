@@ -29,7 +29,7 @@ import { T } from './libs/types/common';
 				return graphqlFormattedError;
 			},
 		}),
-		ComponentsModule, // modullarni chaqryapmz
+		ComponentsModule, // modullarni chaqryapdi
 		DatabaseModule, // Database TCP hosil qlyapd
 	],
 	controllers: [AppController],
