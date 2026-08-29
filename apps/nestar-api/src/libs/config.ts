@@ -30,7 +30,7 @@ export const availablePropertySorts = [
 
 export const lookupMember = {
 	$lookup: {
-		from: 'members',
+		from: 'member',
 		localField: 'memberId',
 		foreignField: '_id',
 		as: 'memberData',
