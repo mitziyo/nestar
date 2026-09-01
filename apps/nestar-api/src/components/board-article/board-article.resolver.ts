@@ -2,8 +2,8 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { BoardArticleService } from './board-article.service';
 import { UseGuards } from '@nestjs/common';
 import type { ObjectId } from 'mongoose';
-import { BoardArticle } from '../../libs/dto/board-article/board-article';
-import { BoardArticleInput } from '../../libs/dto/board-article/board-article.input';
+import { BoardArticle, BoardArticles } from '../../libs/dto/board-article/board-article';
+import { BoardArticleInput, BoardArticlesInquiry } from '../../libs/dto/board-article/board-article.input';
 import { BoardArticleUpdate } from '../../libs/dto/board-article/board-article.update';
 import { AuthMember } from '../auth/decorators/authMember.decorator';
 import { AuthGuard } from '../auth/guards/auth.guard';
@@ -44,5 +44,15 @@ export class BoardArticleResolver {
 		console.log('Mutation: updateBoardArticle');
 		input._id = shapeIntoMongoObjectId(input._id);
 		return await this.boardArticleService.updateBoardArticle(memberId, input);
+	}
+
+	@UseGuards(WithoutGuard)
+	@Query((returns) => BoardArticles)
+	public async getBoardArticles(
+		@Args('input') input: BoardArticlesInquiry,
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<BoardArticles> {
+		console.log('Query: getBoardArticles');
+		return await this.boardArticleService.getBoardArticles(memberId, input);
 	}
 }
