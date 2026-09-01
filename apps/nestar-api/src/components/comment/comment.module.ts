@@ -21,3 +21,13 @@ import { BoardArticleModule } from '../board-article/board-article.module';
 	providers: [CommentResolver, CommentService],
 })
 export class CommentModule {}
+
+
+
+
+
+
+
+
+
+
