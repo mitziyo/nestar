@@ -40,3 +40,21 @@ export const lookupMember = {
 		as: 'memberData',
 	},
 };
+
+export const lookupFollowingData = {
+	$lookup: {
+		from: 'member',
+		localField: 'followingId',
+		foreignField: '_id',
+		as: 'followingData',
+	},
+};
+
+export const lookupFollowerData = {
+	$lookup: {
+		from: 'member',
+		localField: 'followerId',
+		foreignField: '_id',
+		as: 'followerData',
+	},
+};
