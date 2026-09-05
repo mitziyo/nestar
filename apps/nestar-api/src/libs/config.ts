@@ -65,6 +65,47 @@ export const lookupAuthMemberLiked = (memberId: T, targetRefId: string = '$_id')
 	};
 };
 
+interface LookupAuthMemberFollowed {
+	followerId: T; // joriy (so'rov yuborgan) a'zoning id'si
+	followingId: string; // ro'yxatdagi har bir elementning tegishli maydoni (masalan "$followingId")
+}
+
+export const lookupAuthMemberFollowed = (input: LookupAuthMemberFollowed) => {
+	const { followerId, followingId } = input;
+	return {
+		$lookup: {
+			from: 'follows', // haqiqiy follow yozuvlari saqlanadigan kolleksiya
+			let: {
+				localFollowerId: followerId,
+				localFollowingId: followingId,
+				localMyFavorite: true, // topilsa true qilib qaytarish uchun sobit qiymat
+			},
+			pipeline: [
+				{
+					$match: {
+						$expr: {
+							// joriy a'zo aynan shu odamni kuzatib turganmi (follow qilganmi) — tekshiradi
+							$and: [
+								{ $eq: ['$followerId', '$$localFollowerId'] },
+								{ $eq: ['$followingId', '$$localFollowingId'] },
+							],
+						},
+					},
+				},
+				{
+					$project: {
+						_id: 0,
+						followerId: 1,
+						followingId: 1,
+						myFollowing: '$$localMyFavorite', // topilgan hujjatga "true" belgisini qo'shadi
+					},
+				},
+			],
+			as: 'meFollowed', // natija shu nom bilan asosiy hujjatga qo'shiladi
+		},
+	};
+};
+
 export const lookupMember = {
 	$lookup: {
 		from: 'member',
