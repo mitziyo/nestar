@@ -4,6 +4,7 @@ import { BadRequestException, Injectable, InternalServerErrorException } from '@
 import {
 	AgentPropertiesInquiry,
 	AllPropertiesInquiry,
+	OrdinaryInquiry,
 	PropertiesInquiry,
 	PropertyInput,
 } from '../../libs/dto/property/property.input';
@@ -145,6 +146,11 @@ export class PropertyService {
 		if (!result.length) throw new InternalServerErrorException(Message.NO_DATA_FOUND);
 
 		return result[0];
+	}
+
+	public async getFavorites(memberId: ObjectId, input: OrdinaryInquiry): Promise<Properties> {
+		// haqiqiy mantiq like.service.ts'da — bu yerda faqat shu servisga yo'naltiradi
+		return await this.likeService.getFavoriteProperties(memberId, input);
 	}
 
 	private shapeMatchQuery(match: T, input: PropertiesInquiry): void {

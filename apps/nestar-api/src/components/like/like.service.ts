@@ -5,6 +5,11 @@ import { Like, MeLiked } from '../../libs/dto/like/like';
 import { LikeInput } from '../../libs/dto/like/like.input';
 import { T } from '../../libs/types/common';
 import { Message } from '../../libs/enums/common.enum';
+import type { ObjectId } from 'mongoose';
+import { OrdinaryInquiry } from '../../libs/dto/property/property.input';
+import { Properties } from '../../libs/dto/property/property';
+import { LikeGroup } from '../../libs/enums/like.enum';
+import { lookupFavorite } from '../../libs/config';
 
 @Injectable()
 export class LikeService {
@@ -36,5 +41,53 @@ export class LikeService {
 		const result = await this.likeModel.findOne({ memberId: memberId, likeRefId: likeRefId }).exec();
 
 		return result ? [{ memberId: memberId, likeRefId: likeRefId, myFavorite: true }] : [];
+	}
+
+	public async getFavoriteProperties(memberId: ObjectId, inqut: OrdinaryInquiry): Promise<Properties> {
+		const { page, limit } = inqut;
+
+		const match: T = { likeGroup: LikeGroup.PROPERTY, memberId: memberId };
+
+		// joriy a'zo laykagan propertylarni topib, ularning to'liq ma'lumotini (properties kolleksiyasidan) biriktiradi
+		const data: T = await this.likeModel
+			.aggregate([
+				{ $match: match },
+				{ $sort: { updatedAt: -1 } },
+
+				{
+					$lookup: {
+						from: 'properties',
+						localField: 'likeRefId',
+						foreignField: '_id',
+						as: 'favoriteProperty',
+					},
+				},
+
+				{ $unwind: '$favoriteProperty' },
+
+				{
+					$facet: {
+						list: [
+							{ $skip: (page - 1) * limit },
+							{ $limit: limit },
+
+							lookupFavorite,
+							{ $unwind: '$favoriteProperty.memberData' },
+						],
+						metaCounter: [{ $count: 'total' }],
+					},
+				},
+			])
+			.exec();
+
+		console.log('data', data);
+
+		// natija "like" hujjatlari shaklida keladi, shuning uchun faqat ichidagi propertyni ajratib olamiz
+		const result: Properties = { list: [], metaCounter: data[0].metaCounter };
+
+		result.list = data[0].list.map((ele) => ele.favoriteProperty);
+		console.log('result', result);
+
+		return result;
 	}
 }

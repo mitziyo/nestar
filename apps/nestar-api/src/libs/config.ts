@@ -132,3 +132,12 @@ export const lookupFollowerData = {
 		as: 'followerData',
 	},
 };
+
+export const lookupFavorite = {
+	$lookup: {
+		from: 'member', // "getFavoriteProperties" natijasidagi propertyning egasi (agent) ma'lumotini biriktiradi
+		localField: 'favoriteProperty.memberId',
+		foreignField: '_id',
+		as: 'favoriteProperty.memberData',
+	},
+};
