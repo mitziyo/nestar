@@ -141,3 +141,12 @@ export const lookupFavorite = {
 		as: 'favoriteProperty.memberData',
 	},
 };
+
+export const lookupVisit = {
+	$lookup: {
+		from: 'member', // "getVisitedProperties" natijasidagi propertyning egasi (agent) ma'lumotini biriktiradi
+		localField: 'visitedProperty.memberId',
+		foreignField: '_id',
+		as: 'visitedProperty.memberData',
+	},
+};
