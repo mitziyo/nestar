@@ -50,7 +50,7 @@ class AISearch {
 }
 
 @InputType()
-export class AgentsInquery {
+export class AgentsInquiry {
 	@IsNotEmpty()
 	@Min(1)
 	@Field(() => Int)
@@ -62,7 +62,7 @@ export class AgentsInquery {
 	limit!: number;
 
 	@IsOptional()
-	@IsIn([availableAgentSorts])
+	@IsIn(availableAgentSorts)
 	@Field(() => String, { nullable: true })
 	sort?: string;
 
