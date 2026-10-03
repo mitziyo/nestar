@@ -91,7 +91,7 @@ class MISearch {
 }
 
 @InputType()
-export class MembersInquery {
+export class MembersInquiry {
 	@IsNotEmpty()
 	@Min(1)
 	@Field(() => Int)
@@ -103,7 +103,7 @@ export class MembersInquery {
 	limit!: number;
 
 	@IsOptional()
-	@IsIn([availableMemberSorts])
+	@IsIn(availableMemberSorts)
 	@Field(() => String, { nullable: true })
 	sort?: string;
 
